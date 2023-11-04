@@ -1,0 +1,45 @@
+h1{
+    margin-left: 200px;
+    margin-top: 100px;
+    color:white;
+  }
+
+
+
+.nar{
+    background-color: skyblue !important ;
+    /* margin-left: 200px !important;
+    height: 80px !important; */
+    }
+
+select {
+    width: 200px !important;
+    margin-left: 200px; 
+    }
+
+.choose-file{
+    width: 500px !important;
+    margin: 0 200px
+    }
+
+.showImg{
+    margin: 0 auto;
+    width: 1000px !important;
+    height: 0 !important;
+    }
+
+body {
+    background-image: url('http://cdn-hw-static2.shanhutech.cn/bizhi/staticwp/202310/6cf6274044d0cb0a7c25d54432c93b29--3568532421.jpg'); 
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    }
+
+/* 选择文件栏右边的提交按钮的颜色 */
+.button-colar{
+    background-color: skyblue;
+    }
+
+.output{
+    display: flex;
+    }
