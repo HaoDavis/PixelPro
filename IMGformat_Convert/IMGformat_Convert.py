@@ -2,6 +2,7 @@ import os
 
 from PIL import Image
 from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPM
 from glob import glob
 
 # 图片格式支持：  png jpg bmp
@@ -18,12 +19,14 @@ def img2Convert(path_in, target_format):
     :param target_format:  图片输出格式
     :return bool：是否成功
     """
-    Dir_img = path_in.split('.')[0]
+    Dir_img, src_format= path_in.split('.')[0],path_in.split('.')[1]
+    if src_format == 'svg':
+        drawing = svg2rlg(path_in)
+        renderPM.drawToFile(drawing,Dir_img+'.'+target_format,fmt=target_format.upper())
     with Image.open(path_in) as source_img:
-        src_format = source_img.format
         src_mode = source_img.mode
         has_alpha = 'A' in src_mode # bool
-        if src_format.lower() != target_format:
+        if src_format != target_format:
             source_img = source_img.convert('RGB')  # 将源图像convert到PIL支持的mode
             target_img = Image.new(src_mode, source_img.size)  # 创建目标对象
             target_img.putdata(list(source_img.getdata()))  # 将像素从源图像复制到目标图像
@@ -41,8 +44,3 @@ def img_folder2Convert(file_folder, tgt_format):  # 整个文件夹读取图片
             print('the format of {} is not support yet'.format(img))
         else:
             img2Convert(img, tgt_format)
-
-
-if __name__ == '__main__':
-    # img2Convert('data/img.png','png')
-    img_folder2Convert('data', 'bmp')
