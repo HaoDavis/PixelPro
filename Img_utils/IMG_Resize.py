@@ -3,39 +3,47 @@ import logging
 
 from PIL import Image
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
-def Image_Resize(src_file, width, height,dst_file=None, quality=75):
-    """
-    param src_file: Source file path
-    :param dst_file: Destination file path
-    :param width: Output width
-    :param height: Output height
-    :param quality: JPEG quality from 0-100
-    """
-    if width <= 0 or height <= 0:
-        raise ValueError('Width and Height must be positive numbers')
+class Image_Resize:
+    support_formats = ['png', 'jpg', 'jpeg']
 
-    if not os.path.exists(src_file):
-        raise FileNotFoundError
+    def __init__(self, quality=75):
+        self.quality = quality
 
-    basename, ext = os.path.splitext(os.path.basename(src_file))
-    dst_file = dst_file or f'{basename}_compressed{ext}'
+    def resize(self, src_file: str, width: int, height: int, dst_file: str = None, mode='min') -> Image:
+        if width <= 0 or height <= 0:
+            raise ValueError('Width and Height must be positive numbers')
 
-    logging.info(f'Resize {src_file} to {dst_file}')
+        if not os.path.exists(src_file):
+            raise FileNotFoundError
 
-    try:
+        filename, ext = os.path.splitext(os.path.basename(src_file))
+        dst_file = dst_file or f'{filename}_compressed{ext}'
+        if ext[1:] not in self.support_formats:
+            raise ValueError(f'Unsupported format: {ext}')
+
+        logger.debug('Opening Image %s', src_file)
+
         with Image.open(src_file) as img:
             origin_w, origin_h = img.size
-            
-            logging.info(f'Original size: {origin_w}*{origin_h}')
-            ratio = min(width / origin_w, height / origin_h)
+
+            logger.debug('Claculating resize ratio')
+            ratio= self.get_ratio(origin_w,origin_h,width,height)
             new_size = (int(origin_w * ratio), int(origin_h * ratio))
 
+            logger.debug('Resizing the img to %s',new_size)
             resized_img = img.resize(new_size)
-            resized_img.save(dst_file,quality=quality)
-    except Exception as e:
-        logging.error(f'Failed to resized image:{e} ')
-        raise e
+
+            logger.debug('Saving resized img to %s',dst_file)
+            resized_img.save(dst_file, quality=self.quality)
+
+    def get_ratio(self,origin_w,origin_h,width,height,mode):
+        return mode(width / origin_w, height / origin_h)
+
+    def mul_resize(self):
+        pass
 
 if __name__ == '__main__':
-    Image_Resize('computer_kuan_201632_18.jpg',1024,768)
+    Image_Resize().resize('',1024,768)
