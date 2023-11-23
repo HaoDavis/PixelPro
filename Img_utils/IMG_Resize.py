@@ -30,7 +30,7 @@ class Image_Resize:
             origin_w, origin_h = img.size
 
             logger.debug('Claculating resize ratio')
-            ratio= self.get_ratio(origin_w,origin_h,width,height)
+            ratio= self.get_ratio(origin_w,origin_h,width,height,min)
             new_size = (int(origin_w * ratio), int(origin_h * ratio))
 
             logger.debug('Resizing the img to %s',new_size)
