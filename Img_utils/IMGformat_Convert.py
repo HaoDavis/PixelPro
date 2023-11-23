@@ -1,12 +1,12 @@
 import os
 
+import threading
 from PIL import Image
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
 from glob import glob
 
 # 图片格式支持：  png jpg bmp
-# TODO :  webp svg
 path_in = r'data'
 path_out = r'result'
 FORMAT = ['PNG', 'JPG', 'BMP', 'SVG', 'JFIF', 'WEBP']
@@ -17,7 +17,6 @@ def img2Convert(path_in, target_format):
     """
     param path_in: 原图片路径
     :param target_format:  图片输出格式
-    :return bool：是否成功
     """
     Dir_img, src_format= path_in.split('.')[0],path_in.split('.')[1]
     if src_format == 'svg':
@@ -36,11 +35,16 @@ def img2Convert(path_in, target_format):
         else:
             print('formats are the same,no need to convert 😅')
 
-
-def img_folder2Convert(file_folder, tgt_format):  # 整个文件夹读取图片
+def img_folder2Convert(file_folder,target_format):
+    threads=[]
     for img in glob(file_folder + '\\*'):
-        img_format=img.split('.')[1].upper()
+        img_format = img.split('.')[1].upper()
         if img_format not in FORMAT:
-            print('the format of {} is not support yet'.format(img))
-        else:
-            img2Convert(img, tgt_format)
+            raise ValueError('The format of {} is not support'.format(img))
+        t=threading.Thread(target=img2Convert,args=(f,target_format))
+        threads.append(t)
+        t.start()
+    for t in threads:
+        t.join()
+
+
