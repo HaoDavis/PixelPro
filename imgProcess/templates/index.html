@@ -1,3 +1,4 @@
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,6 +25,20 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="#">关于我们</a>
                 </li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% if func %}
+                        {{ keys|getDictVal:func }}
+                        {% else %}
+                        图像处理
+                    {% endif %}
+                  </a>
+                  <ul class="dropdown-menu">
+                      {% for key, value in keys.items %}
+                        <li><a class="dropdown-item" href="{% url 'func' key %}">{{ value }}</a></li>
+                      {% endfor %}
+                  </ul>
+                </li>
             </ul>
         </div>
     </div>
@@ -31,13 +46,50 @@
 {% if msg %}
     <div class="alert alert-warning" role="alert">{{ msg }}</div>
 {% endif %}
-<h1>图像处理-右击处理后的图片来保存或复制链接</h1>
-<form action="" method="post" enctype="multipart/form-data">
-    <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" name="func">
-        <option selected>选择功能</option>
-        <option value="compress_image">压缩图片</option>
-    </select>
-    <div class="input-group input-group-lg choose-file">
+{% if text %}
+    <div class="alert alert-info" role="alert">识别结果: {{ text }}</div>
+{% endif %}
+{% if func %}
+<h1>{% if func %}
+    {{ keys|getDictVal:func }}
+                        {% else %}
+                        图像处理
+                    {% endif %} -右击处理后的图片来保存或复制链接</h1>
+    <div class="container" style="color: black">
+        <form action="" method="post" enctype="multipart/form-data">
+    {% if func == 'resizeImg' %}
+        <div class="mb-3 row">
+          <label for="exampleFormControlInput1" class="col-sm-2 form-label " hidden>高度</label>
+            <div class="col-sm-8 offset-sm-2">
+          <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="高度" name="height"></div>
+        </div>
+        <div class="mb-3 row">
+          <label for="exampleFormControlInput2" class="col-sm-2 form-label " hidden>宽度</label>
+            <div class="col-sm-8 offset-sm-2">
+          <input type="text" class="form-control" id="exampleFormControlInput2" placeholder="宽度" name="weight"></div>
+        </div>
+        {% elif func == 'convertImg' %}
+        <div class="mb-3 mt-3 row">
+          <label for="exampleFormControlInput2" class="col-sm-2 form-label " hidden>格式</label>
+            <div class="col-sm-8 col-sm-offset-2">
+                <select class="form-select" aria-label="Default select example" name="target_format">
+                  <option value="png">png</option>
+                  <option value="jpg">jpg</option>
+                  <option value="jpeg">jpeg</option>
+                </select>
+        </div>
+        {% elif func == 'convertColor' %}
+        <div class="mb-3 mt-3 row">
+          <label for="exampleFormControlInput2" class="col-sm-2 form-label " hidden>格式</label>
+            <div class="col-sm-8 col-sm-offset-2">
+                <select class="form-select" aria-label="Default select example" name="color">
+                  <option value="red">蓝底换红底</option>
+                  <option value="blue">红底变蓝底</option>
+                  <option value="white">红底换白底</option>
+                </select>
+        </div>
+    {% endif %}
+    <div class="input-group input-group-lg choose-file" style="margin-top: 20px">
         <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04"
                aria-label="Upload" accept="image/*" name="img">
         <button class="btn btn-outline-secondary button-colar button-submit" type="submit" id="inputGroupFileAddon04">
@@ -46,8 +98,15 @@
     </div>
 
 </form>
+    </div>
+
 <div class="showImg">
     <img src="{% static imgName %}" class="img-fluid" alt="加载中" title="处理后的图片">
 </div>
+    {% else %}
+    <h1>请先选择图片处理方法</h1>
+{% endif %}
+
+<script src="{% static 'Bootstrap/js/bootstrap.bundle.js' %}"></script>
 </body>
 </html>

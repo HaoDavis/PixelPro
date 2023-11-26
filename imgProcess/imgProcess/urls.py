@@ -21,4 +21,5 @@ from imgApp import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index),
+    path('<str:func>', views.index, name="func"),
 ]
